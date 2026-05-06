@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,16 +11,26 @@ from .config import settings
 from .database import get_db
 from .models import Admin
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/admin/login")
+
+# bcrypt limit is 72 bytes; truncate longer secrets defensively
+_BCRYPT_MAX_BYTES = 72
+
+
+def _to_bytes(password: str) -> bytes:
+    data = password.encode("utf-8")
+    return data[:_BCRYPT_MAX_BYTES]
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(_to_bytes(password), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return bcrypt.checkpw(_to_bytes(plain), hashed.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 def create_access_token(subject: str) -> str:
