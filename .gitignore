@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+.pytest_cache/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings
+.claude/
+
+# Build / dist
+build/
+dist/
+
+# Database / runtime
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Alembic local versions if any
+backend/alembic/versions/__pycache__/

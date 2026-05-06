@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss Koreya — Admin panel</title>
+<style>
+  :root {
+    --cream: #faf7f4;
+    --rose: #c9897a;
+    --dark: #1a1510;
+    --muted: #8a7a6e;
+    --accent: #b5614a;
+    --gold: #c8a96e;
+    --border: #e8dccf;
+    --green: #2d8a4f;
+    --red: #c44a3a;
+    --blue: #4a7bc4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--cream); color: var(--dark); }
+  header {
+    background: var(--dark); color: var(--cream);
+    padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+  }
+  header h1 { font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  header button {
+    background: transparent; color: var(--cream); border: 1px solid var(--cream);
+    padding: 8px 16px; cursor: pointer; font-size: 12px; letter-spacing: 1px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  .tab {
+    padding: 12px 24px; background: none; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px;
+  }
+  .tab.active { color: var(--dark); border-bottom-color: var(--accent); }
+  .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filters select, .filters button {
+    padding: 8px 16px; border: 1px solid var(--border); background: white;
+    font-size: 13px; cursor: pointer; border-radius: 4px;
+  }
+  .card {
+    background: white; border: 1px solid var(--border); padding: 20px;
+    margin-bottom: 12px; border-radius: 6px;
+  }
+  .order-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 12px;
+  }
+  .order-id { font-size: 16px; font-weight: 700; }
+  .order-meta { color: var(--muted); font-size: 12px; }
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .b-new { background: #fde9d8; color: var(--accent); }
+  .b-confirmed { background: #e0eaff; color: var(--blue); }
+  .b-shipped { background: #e6f4ea; color: var(--green); }
+  .b-delivered { background: #d0e8d8; color: var(--green); }
+  .b-cancelled { background: #f4dedb; color: var(--red); }
+  .info-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin: 12px 0; padding: 12px; background: var(--cream); border-radius: 4px;
+  }
+  .info-grid div b { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table th, table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+  .total { text-align: right; font-weight: 700; font-size: 16px; margin-top: 8px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .actions button {
+    padding: 8px 16px; border: 1px solid var(--border); background: white;
+    cursor: pointer; font-size: 12px; border-radius: 4px;
+  }
+  .actions button:hover { background: var(--cream); }
+  .actions .primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .actions .danger { color: var(--red); border-color: var(--red); }
+
+  /* Login */
+  .login-wrap { max-width: 400px; margin: 80px auto; padding: 40px; background: white; border-radius: 8px; }
+  .login-wrap h2 { margin-bottom: 24px; text-align: center; }
+  .login-wrap input {
+    width: 100%; padding: 12px; margin-bottom: 12px;
+    border: 1px solid var(--border); border-radius: 4px; font-size: 14px;
+  }
+  .login-wrap button {
+    width: 100%; padding: 12px; background: var(--accent); color: white;
+    border: none; cursor: pointer; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .err { color: var(--red); font-size: 13px; margin-bottom: 12px; }
+
+  /* Products */
+  .product-row { display: grid; grid-template-columns: 60px 2fr 1fr 100px 80px 120px; gap: 12px; align-items: center; padding: 8px; border-bottom: 1px solid var(--border); }
+  .product-row input { padding: 6px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 13px; }
+  .product-row .toggle { display: flex; gap: 4px; }
+  .add-product { margin-top: 16px; padding: 10px 20px; background: var(--gold); color: var(--dark); border: none; cursor: pointer; font-weight: 600; }
+  .empty { text-align: center; padding: 40px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="login" style="display:none">
+  <div class="login-wrap">
+    <h2>Admin login</h2>
+    <div id="login-err" class="err"></div>
+    <input id="username" placeholder="Username" autocomplete="username">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()">Kirish</button>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <header>
+    <h1>Miss Koreya — Admin</h1>
+    <button onclick="logout()">Chiqish</button>
+  </header>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" data-tab="orders" onclick="switchTab('orders')">Buyurtmalar</button>
+      <button class="tab" data-tab="products" onclick="switchTab('products')">Mahsulotlar</button>
+    </div>
+
+    <div id="tab-orders">
+      <div class="filters">
+        <select id="status-filter" onchange="loadOrders()">
+          <option value="">Barcha statuslar</option>
+          <option value="new">Yangi</option>
+          <option value="confirmed">Tasdiqlangan</option>
+          <option value="shipped">Yuborilgan</option>
+          <option value="delivered">Yetkazilgan</option>
+          <option value="cancelled">Bekor qilingan</option>
+        </select>
+        <button onclick="loadOrders()">Yangilash</button>
+      </div>
+      <div id="orders-list"></div>
+    </div>
+
+    <div id="tab-products" style="display:none">
+      <div id="products-list"></div>
+      <button class="add-product" onclick="addProductRow()">+ Yangi mahsulot</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';  // same origin
+const TOKEN_KEY = 'mk_admin_token';
+
+function authHeaders() {
+  return { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN_KEY) };
+}
+
+async function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const err = document.getElementById('login-err');
+  err.textContent = '';
+  try {
+    const r = await fetch(API + '/api/admin/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: u, password: p})
+    });
+    if (!r.ok) {
+      err.textContent = 'Noto\'g\'ri login yoki parol';
+      return;
+    }
+    const data = await r.json();
+    localStorage.setItem(TOKEN_KEY, data.access_token);
+    showApp();
+  } catch (e) {
+    err.textContent = 'Tarmoq xatosi';
+  }
+}
+
+function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+  showLogin();
+}
+
+function showLogin() {
+  document.getElementById('login').style.display = 'block';
+  document.getElementById('app').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadOrders();
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.getElementById('tab-orders').style.display = name === 'orders' ? 'block' : 'none';
+  document.getElementById('tab-products').style.display = name === 'products' ? 'block' : 'none';
+  if (name === 'products') loadProducts();
+}
+
+function fmtMoney(n) { return Number(n).toLocaleString('ru-RU') + ' so\'m'; }
+function fmtDate(s) { return new Date(s).toLocaleString('ru-RU'); }
+function statusBadge(s) {
+  const map = { new: 'Yangi', confirmed: 'Tasdiqlangan', shipped: 'Yuborilgan', delivered: 'Yetkazilgan', cancelled: 'Bekor qilingan' };
+  return `<span class="badge b-${s}">${map[s] || s}</span>`;
+}
+
+async function loadOrders() {
+  const status = document.getElementById('status-filter').value;
+  const url = API + '/api/admin/orders' + (status ? '?status=' + status : '');
+  const r = await fetch(url, { headers: authHeaders() });
+  if (r.status === 401) return showLogin();
+  const orders = await r.json();
+  const list = document.getElementById('orders-list');
+  if (!orders.length) {
+    list.innerHTML = '<div class="empty">Buyurtmalar yo\'q</div>';
+    return;
+  }
+  list.innerHTML = orders.map(o => `
+    <div class="card">
+      <div class="order-head">
+        <div>
+          <div class="order-id">#${o.id} ${statusBadge(o.status)}</div>
+          <div class="order-meta">${fmtDate(o.created_at)} · ${o.source}</div>
+        </div>
+        <div style="font-size:18px;font-weight:700">${fmtMoney(o.total)}</div>
+      </div>
+      <div class="info-grid">
+        <div><b>Mijoz</b>${escapeHtml(o.customer_name)}</div>
+        <div><b>Telefon</b><a href="tel:${escapeHtml(o.phone)}">${escapeHtml(o.phone)}</a></div>
+        <div><b>Manzil</b>${escapeHtml(o.address)}</div>
+        ${o.telegram_username ? `<div><b>Telegram</b>@${escapeHtml(o.telegram_username)}</div>` : ''}
+        ${o.comment ? `<div style="grid-column:1/-1"><b>Izoh</b>${escapeHtml(o.comment)}</div>` : ''}
+      </div>
+      <table>
+        <thead><tr><th>Mahsulot</th><th>Narx</th><th>Soni</th><th style="text-align:right">Jami</th></tr></thead>
+        <tbody>
+          ${o.items.map(i => `<tr>
+            <td>${escapeHtml(i.product_name)}</td>
+            <td>${fmtMoney(i.price)}</td>
+            <td>${i.quantity}</td>
+            <td style="text-align:right">${fmtMoney(i.price * i.quantity)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="actions">
+        ${['new','confirmed','shipped','delivered','cancelled'].filter(s => s !== o.status).map(s =>
+          `<button onclick="setStatus(${o.id}, '${s}')">${statusBadge(s).replace(/<[^>]+>/g,'')}</button>`
+        ).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function setStatus(id, status) {
+  const r = await fetch(API + '/api/admin/orders/' + id, {
+    method: 'PATCH',
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  if (r.ok) loadOrders();
+  else alert('Xato: ' + r.status);
+}
+
+let productsCache = [];
+
+async function loadProducts() {
+  const r = await fetch(API + '/api/admin/products', { headers: authHeaders() });
+  if (r.status === 401) return showLogin();
+  productsCache = await r.json();
+  renderProducts();
+}
+
+function renderProducts() {
+  const list = document.getElementById('products-list');
+  list.innerHTML = `
+    <div class="product-row" style="font-weight:600;background:var(--cream)">
+      <div>ID</div><div>Nomi</div><div>Tavsif</div><div>Narx</div><div>Mavjud</div><div></div>
+    </div>
+    ${productsCache.map((p, idx) => `
+      <div class="product-row">
+        <div>${p.id || '—'}</div>
+        <input value="${escapeAttr(p.name)}" oninput="productsCache[${idx}].name = this.value">
+        <input value="${escapeAttr(p.description || '')}" oninput="productsCache[${idx}].description = this.value">
+        <input type="number" value="${p.price}" oninput="productsCache[${idx}].price = this.value">
+        <input type="checkbox" ${p.in_stock ? 'checked' : ''} onchange="productsCache[${idx}].in_stock = this.checked">
+        <div style="display:flex;gap:4px">
+          <button onclick="saveProduct(${idx})">Saqlash</button>
+          ${p.id ? `<button class="danger" onclick="delProduct(${idx})">×</button>` : ''}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function addProductRow() {
+  productsCache.push({ name: '', description: '', price: 0, in_stock: true, sort_order: productsCache.length + 1 });
+  renderProducts();
+}
+
+async function saveProduct(idx) {
+  const p = productsCache[idx];
+  const body = {
+    name: p.name,
+    description: p.description || null,
+    price: Number(p.price),
+    image_url: p.image_url || null,
+    category: p.category || null,
+    in_stock: !!p.in_stock,
+    sort_order: p.sort_order || 0,
+  };
+  const url = p.id ? `${API}/api/admin/products/${p.id}` : `${API}/api/admin/products`;
+  const method = p.id ? 'PUT' : 'POST';
+  const r = await fetch(url, {
+    method,
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (r.ok) loadProducts();
+  else alert('Xato: ' + r.status);
+}
+
+async function delProduct(idx) {
+  const p = productsCache[idx];
+  if (!confirm(`O'chirilsinmi: ${p.name}?`)) return;
+  const r = await fetch(`${API}/api/admin/products/${p.id}`, {
+    method: 'DELETE', headers: authHeaders()
+  });
+  if (r.ok || r.status === 204) loadProducts();
+  else alert('Xato: ' + r.status);
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+if (localStorage.getItem(TOKEN_KEY)) showApp();
+else showLogin();
+</script>
+</body>
+</html>

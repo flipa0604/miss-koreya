@@ -1,0 +1,20 @@
+# /etc/systemd/system/misskoreya-api.service
+# sudo systemctl daemon-reload && sudo systemctl enable --now misskoreya-api
+
+[Unit]
+Description=Miss Koreya FastAPI backend
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=misskoreya
+Group=misskoreya
+WorkingDirectory=/opt/misskoreya/backend
+EnvironmentFile=/opt/misskoreya/backend/.env
+ExecStart=/opt/misskoreya/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
