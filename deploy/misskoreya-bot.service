@@ -8,11 +8,11 @@ Wants=misskoreya-api.service
 
 [Service]
 Type=simple
-User=misskoreya
-Group=misskoreya
-WorkingDirectory=/opt/misskoreya/bot
-EnvironmentFile=/opt/misskoreya/backend/.env
-ExecStart=/opt/misskoreya/venv/bin/python bot.py
+User=flipa
+Group=flipa
+WorkingDirectory=/home/flipa/apps/misskoreya/bot
+EnvironmentFile=/home/flipa/apps/misskoreya/backend/.env
+ExecStart=/home/flipa/apps/misskoreya/venv/bin/python bot.py
 Restart=always
 RestartSec=5
 
