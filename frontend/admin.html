@@ -18,32 +18,38 @@
     --blue: #4a7bc4;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--cream); color: var(--dark); }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--cream); color: var(--dark); }
   header {
     background: var(--dark); color: var(--cream);
-    padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;
   }
-  header h1 { font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  header h1 { font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
   header button {
     background: transparent; color: var(--cream); border: 1px solid var(--cream);
-    padding: 8px 16px; cursor: pointer; font-size: 12px; letter-spacing: 1px;
+    padding: 8px 16px; cursor: pointer; font-size: 12px; letter-spacing: 1px; border-radius: 6px;
   }
-  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  header button:hover { background: var(--cream); color: var(--dark); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
   .tab {
-    padding: 12px 24px; background: none; border: none; cursor: pointer;
+    padding: 12px 22px; background: none; border: none; cursor: pointer;
     font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
     color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px;
   }
   .tab.active { color: var(--dark); border-bottom-color: var(--accent); }
-  .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .filters select, .filters button {
-    padding: 8px 16px; border: 1px solid var(--border); background: white;
-    font-size: 13px; cursor: pointer; border-radius: 4px;
+  .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filters select, .filters button, .filters input {
+    padding: 9px 14px; border: 1px solid var(--border); background: white;
+    font-size: 13px; cursor: pointer; border-radius: 8px;
   }
+  .filters .btn-primary {
+    background: var(--accent); color: white; border-color: var(--accent); font-weight: 600;
+  }
+
+  /* Order card */
   .card {
-    background: white; border: 1px solid var(--border); padding: 20px;
-    margin-bottom: 12px; border-radius: 6px;
+    background: white; border: 1px solid var(--border); padding: 18px;
+    margin-bottom: 12px; border-radius: 12px;
   }
   .order-head {
     display: flex; justify-content: space-between; align-items: flex-start;
@@ -52,8 +58,9 @@
   .order-id { font-size: 16px; font-weight: 700; }
   .order-meta { color: var(--muted); font-size: 12px; }
   .badge {
-    display: inline-block; padding: 4px 10px; border-radius: 12px;
+    display: inline-block; padding: 4px 10px; border-radius: 999px;
     font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    margin-left: 6px;
   }
   .b-new { background: #fde9d8; color: var(--accent); }
   .b-confirmed { background: #e0eaff; color: var(--blue); }
@@ -62,40 +69,96 @@
   .b-cancelled { background: #f4dedb; color: var(--red); }
   .info-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px; margin: 12px 0; padding: 12px; background: var(--cream); border-radius: 4px;
+    gap: 12px; margin: 12px 0; padding: 12px; background: var(--cream); border-radius: 8px;
   }
-  .info-grid div b { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+  .info-grid div b { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   table th, table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
-  .total { text-align: right; font-weight: 700; font-size: 16px; margin-top: 8px; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
   .actions button {
-    padding: 8px 16px; border: 1px solid var(--border); background: white;
-    cursor: pointer; font-size: 12px; border-radius: 4px;
+    padding: 7px 14px; border: 1px solid var(--border); background: white;
+    cursor: pointer; font-size: 12px; border-radius: 8px; font-weight: 600;
   }
   .actions button:hover { background: var(--cream); }
-  .actions .primary { background: var(--accent); color: white; border-color: var(--accent); }
-  .actions .danger { color: var(--red); border-color: var(--red); }
 
   /* Login */
-  .login-wrap { max-width: 400px; margin: 80px auto; padding: 40px; background: white; border-radius: 8px; }
-  .login-wrap h2 { margin-bottom: 24px; text-align: center; }
+  .login-wrap { max-width: 400px; margin: 80px auto; padding: 40px; background: white; border-radius: 14px; box-shadow: 0 12px 40px rgba(26,21,16,.08); }
+  .login-wrap h2 { margin-bottom: 24px; text-align: center; font-weight: 700; }
   .login-wrap input {
     width: 100%; padding: 12px; margin-bottom: 12px;
-    border: 1px solid var(--border); border-radius: 4px; font-size: 14px;
+    border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--cream);
   }
   .login-wrap button {
-    width: 100%; padding: 12px; background: var(--accent); color: white;
-    border: none; cursor: pointer; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+    width: 100%; padding: 13px; background: var(--accent); color: white;
+    border: none; cursor: pointer; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    border-radius: 8px; font-weight: 600;
   }
   .err { color: var(--red); font-size: 13px; margin-bottom: 12px; }
 
   /* Products */
-  .product-row { display: grid; grid-template-columns: 60px 2fr 1fr 100px 80px 120px; gap: 12px; align-items: center; padding: 8px; border-bottom: 1px solid var(--border); }
-  .product-row input { padding: 6px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 13px; }
-  .product-row .toggle { display: flex; gap: 4px; }
-  .add-product { margin-top: 16px; padding: 10px 20px; background: var(--gold); color: var(--dark); border: none; cursor: pointer; font-weight: 600; }
+  .product-card {
+    background: white; border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px; margin-bottom: 14px;
+    display: grid; grid-template-columns: 130px 1fr; gap: 18px;
+  }
+  .product-card.new {
+    border: 2px dashed var(--gold); background: #fffaf0;
+  }
+  .product-card .image-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .product-card img.preview {
+    width: 130px; height: 130px; object-fit: cover; border-radius: 10px;
+    background: linear-gradient(135deg, #f3e0d2, var(--cream));
+    border: 1px solid var(--border);
+  }
+  .product-card .image-cell .upload-btn {
+    width: 100%; padding: 7px; background: var(--cream); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 12px; text-align: center;
+  }
+  .product-card .image-cell .upload-btn:hover { background: var(--blush); }
+  .product-card .image-cell input[type="file"] { display: none; }
+
+  .form-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .form-fields .full { grid-column: 1 / -1; }
+  .form-fields label {
+    display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 4px; font-weight: 600;
+  }
+  .form-fields input, .form-fields textarea, .form-fields select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: var(--cream);
+  }
+  .form-fields input:focus, .form-fields textarea:focus { outline: none; border-color: var(--accent); background: white; }
+  .form-fields textarea { resize: vertical; min-height: 60px; }
+  .form-fields .toggle { display: flex; align-items: center; gap: 8px; padding-top: 18px; }
+  .form-fields .toggle input { width: auto; }
+
+  .product-actions { display: flex; gap: 8px; justify-content: flex-end; grid-column: 1 / -1; margin-top: 8px; }
+  .btn { padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: .5px; border: 1px solid transparent; }
+  .btn-save { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-save:hover { background: #9a4f3b; }
+  .btn-del { background: white; color: var(--red); border-color: var(--red); }
+  .btn-del:hover { background: var(--red); color: white; }
+  .btn-add {
+    width: 100%; padding: 14px; background: var(--gold); color: var(--dark);
+    border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .btn-add:hover { background: var(--accent); color: white; }
+
   .empty { text-align: center; padding: 40px; color: var(--muted); }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 100px);
+    background: var(--dark); color: white; padding: 12px 20px; border-radius: 10px;
+    font-size: 13px; z-index: 1000; transition: transform .3s;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.err { background: var(--red); }
+
+  @media (max-width: 600px) {
+    .product-card { grid-template-columns: 1fr; }
+    .product-card .image-cell img.preview { width: 100%; height: 200px; }
+    .form-fields { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -131,24 +194,35 @@
           <option value="delivered">Yetkazilgan</option>
           <option value="cancelled">Bekor qilingan</option>
         </select>
-        <button onclick="loadOrders()">Yangilash</button>
+        <button class="btn-primary" onclick="loadOrders()">Yangilash</button>
       </div>
       <div id="orders-list"></div>
     </div>
 
     <div id="tab-products" style="display:none">
+      <button class="btn-add" onclick="addProductRow()">+ Yangi mahsulot qo'shish</button>
       <div id="products-list"></div>
-      <button class="add-product" onclick="addProductRow()">+ Yangi mahsulot</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const API = '';  // same origin
+const API = '';
 const TOKEN_KEY = 'mk_admin_token';
 
 function authHeaders() {
   return { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN_KEY) };
+}
+
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!isErr);
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 async function doLogin() {
@@ -162,33 +236,16 @@ async function doLogin() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({username: u, password: p})
     });
-    if (!r.ok) {
-      err.textContent = 'Noto\'g\'ri login yoki parol';
-      return;
-    }
+    if (!r.ok) { err.textContent = 'Noto\'g\'ri login yoki parol'; return; }
     const data = await r.json();
     localStorage.setItem(TOKEN_KEY, data.access_token);
     showApp();
-  } catch (e) {
-    err.textContent = 'Tarmoq xatosi';
-  }
+  } catch (e) { err.textContent = 'Tarmoq xatosi'; }
 }
 
-function logout() {
-  localStorage.removeItem(TOKEN_KEY);
-  showLogin();
-}
-
-function showLogin() {
-  document.getElementById('login').style.display = 'block';
-  document.getElementById('app').style.display = 'none';
-}
-
-function showApp() {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadOrders();
-}
+function logout() { localStorage.removeItem(TOKEN_KEY); showLogin(); }
+function showLogin() { document.getElementById('login').style.display = 'block'; document.getElementById('app').style.display = 'none'; }
+function showApp() { document.getElementById('login').style.display = 'none'; document.getElementById('app').style.display = 'block'; loadOrders(); }
 
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
@@ -199,10 +256,12 @@ function switchTab(name) {
 
 function fmtMoney(n) { return Number(n).toLocaleString('ru-RU') + ' so\'m'; }
 function fmtDate(s) { return new Date(s).toLocaleString('ru-RU'); }
-function statusBadge(s) {
-  const map = { new: 'Yangi', confirmed: 'Tasdiqlangan', shipped: 'Yuborilgan', delivered: 'Yetkazilgan', cancelled: 'Bekor qilingan' };
-  return `<span class="badge b-${s}">${map[s] || s}</span>`;
+function statusLabel(s) {
+  return ({ new: 'Yangi', confirmed: 'Tasdiqlangan', shipped: 'Yuborilgan', delivered: 'Yetkazilgan', cancelled: 'Bekor qilingan' })[s] || s;
 }
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ===== Orders ===== */
 
 async function loadOrders() {
   const status = document.getElementById('status-filter').value;
@@ -211,15 +270,12 @@ async function loadOrders() {
   if (r.status === 401) return showLogin();
   const orders = await r.json();
   const list = document.getElementById('orders-list');
-  if (!orders.length) {
-    list.innerHTML = '<div class="empty">Buyurtmalar yo\'q</div>';
-    return;
-  }
+  if (!orders.length) { list.innerHTML = '<div class="empty">Buyurtmalar yo\'q</div>'; return; }
   list.innerHTML = orders.map(o => `
     <div class="card">
       <div class="order-head">
         <div>
-          <div class="order-id">#${o.id} ${statusBadge(o.status)}</div>
+          <div class="order-id">#${o.id} <span class="badge b-${o.status}">${statusLabel(o.status)}</span></div>
           <div class="order-meta">${fmtDate(o.created_at)} · ${o.source}</div>
         </div>
         <div style="font-size:18px;font-weight:700">${fmtMoney(o.total)}</div>
@@ -244,7 +300,7 @@ async function loadOrders() {
       </table>
       <div class="actions">
         ${['new','confirmed','shipped','delivered','cancelled'].filter(s => s !== o.status).map(s =>
-          `<button onclick="setStatus(${o.id}, '${s}')">${statusBadge(s).replace(/<[^>]+>/g,'')}</button>`
+          `<button onclick="setStatus(${o.id}, '${s}')">${statusLabel(s)}</button>`
         ).join('')}
       </div>
     </div>
@@ -257,9 +313,11 @@ async function setStatus(id, status) {
     headers: { ...authHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })
   });
-  if (r.ok) loadOrders();
-  else alert('Xato: ' + r.status);
+  if (r.ok) { showToast('Status yangilandi'); loadOrders(); }
+  else showToast('Xato: ' + r.status, true);
 }
+
+/* ===== Products ===== */
 
 let productsCache = [];
 
@@ -272,67 +330,146 @@ async function loadProducts() {
 
 function renderProducts() {
   const list = document.getElementById('products-list');
-  list.innerHTML = `
-    <div class="product-row" style="font-weight:600;background:var(--cream)">
-      <div>ID</div><div>Nomi</div><div>Tavsif</div><div>Narx</div><div>Mavjud</div><div></div>
-    </div>
-    ${productsCache.map((p, idx) => `
-      <div class="product-row">
-        <div>${p.id || '—'}</div>
-        <input value="${escapeAttr(p.name)}" oninput="productsCache[${idx}].name = this.value">
-        <input value="${escapeAttr(p.description || '')}" oninput="productsCache[${idx}].description = this.value">
-        <input type="number" value="${p.price}" oninput="productsCache[${idx}].price = this.value">
-        <input type="checkbox" ${p.in_stock ? 'checked' : ''} onchange="productsCache[${idx}].in_stock = this.checked">
-        <div style="display:flex;gap:4px">
-          <button onclick="saveProduct(${idx})">Saqlash</button>
-          ${p.id ? `<button class="danger" onclick="delProduct(${idx})">×</button>` : ''}
+  if (!productsCache.length) { list.innerHTML = '<div class="empty">Mahsulotlar yo\'q. Yuqoridagi tugma orqali qo\'shing.</div>'; return; }
+  list.innerHTML = productsCache.map((p, idx) => productCardHtml(p, idx)).join('');
+}
+
+function productCardHtml(p, idx) {
+  const isNew = !p.id;
+  const imgSrc = p.image_url
+    ? (p.image_url.startsWith('http') ? p.image_url : (API + p.image_url))
+    : '';
+  return `
+    <div class="product-card ${isNew ? 'new' : ''}">
+      <div class="image-cell">
+        <img class="preview" id="img-${idx}"
+             src="${imgSrc}"
+             onerror="this.style.background='linear-gradient(135deg,#f3e0d2,var(--cream))';this.removeAttribute('src')"
+             ${imgSrc ? '' : 'style="background:linear-gradient(135deg,#f3e0d2,var(--cream))"'}>
+        <label class="upload-btn">
+          ${imgSrc ? 'Rasmni o\'zgartirish' : 'Rasm yuklash'}
+          <input type="file" accept="image/*" onchange="uploadImage(event, ${idx})">
+        </label>
+        ${imgSrc ? `<button class="upload-btn" onclick="clearImage(${idx})" type="button">× Rasmni olib tashlash</button>` : ''}
+      </div>
+
+      <div class="form-fields">
+        <div class="full">
+          <label>Nomi *</label>
+          <input value="${escapeAttr(p.name)}" oninput="productsCache[${idx}].name=this.value" placeholder="Masalan: Anua Heartleaf Toner">
+        </div>
+
+        <div>
+          <label>Turi (kategoriya)</label>
+          <input value="${escapeAttr(p.category || '')}" oninput="productsCache[${idx}].category=this.value" placeholder="masalan: toner, krem, serum">
+        </div>
+
+        <div>
+          <label>Narxi (so'm) *</label>
+          <input type="number" min="0" step="1" value="${p.price}" oninput="productsCache[${idx}].price=this.value">
+        </div>
+
+        <div class="full">
+          <label>Tavsif</label>
+          <textarea oninput="productsCache[${idx}].description=this.value" placeholder="Mahsulot haqida qisqa ma'lumot">${escapeHtml(p.description || '')}</textarea>
+        </div>
+
+        <div>
+          <label>Tartib raqami</label>
+          <input type="number" min="0" step="1" value="${p.sort_order || 0}" oninput="productsCache[${idx}].sort_order=this.value">
+        </div>
+
+        <div class="toggle">
+          <input type="checkbox" id="stock-${idx}" ${p.in_stock !== false ? 'checked' : ''} onchange="productsCache[${idx}].in_stock=this.checked">
+          <label for="stock-${idx}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--dark);font-weight:500">Sotuvda mavjud</label>
+        </div>
+
+        <div class="product-actions">
+          <button class="btn btn-save" onclick="saveProduct(${idx})">${isNew ? 'Qo\'shish' : 'Saqlash'}</button>
+          ${p.id ? `<button class="btn btn-del" onclick="delProduct(${idx})">O'chirish</button>` : `<button class="btn btn-del" onclick="cancelNew(${idx})">Bekor qilish</button>`}
         </div>
       </div>
-    `).join('')}
+    </div>
   `;
 }
 
+function escapeAttr(s) { return escapeHtml(s); }
+
 function addProductRow() {
-  productsCache.push({ name: '', description: '', price: 0, in_stock: true, sort_order: productsCache.length + 1 });
+  productsCache.unshift({ name: '', description: '', price: 0, image_url: null, category: '', in_stock: true, sort_order: 0 });
+  renderProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelNew(idx) {
+  productsCache.splice(idx, 1);
+  renderProducts();
+}
+
+async function uploadImage(ev, idx) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const r = await fetch(API + '/api/admin/uploads', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: fd,
+    });
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      throw new Error(data.detail || 'Yuklash xatosi ' + r.status);
+    }
+    const data = await r.json();
+    productsCache[idx].image_url = data.url;
+    showToast('Rasm yuklandi');
+    renderProducts();
+  } catch (e) {
+    showToast(String(e.message || e), true);
+  }
+}
+
+function clearImage(idx) {
+  productsCache[idx].image_url = null;
   renderProducts();
 }
 
 async function saveProduct(idx) {
   const p = productsCache[idx];
+  if (!p.name || !p.name.trim()) { showToast('Nomi bo\'sh bo\'lishi mumkin emas', true); return; }
   const body = {
-    name: p.name,
-    description: p.description || null,
-    price: Number(p.price),
+    name: p.name.trim(),
+    description: p.description ? p.description.trim() : null,
+    price: Number(p.price) || 0,
     image_url: p.image_url || null,
-    category: p.category || null,
-    in_stock: !!p.in_stock,
-    sort_order: p.sort_order || 0,
+    category: p.category ? p.category.trim() : null,
+    in_stock: p.in_stock !== false,
+    sort_order: Number(p.sort_order) || 0,
   };
   const url = p.id ? `${API}/api/admin/products/${p.id}` : `${API}/api/admin/products`;
   const method = p.id ? 'PUT' : 'POST';
   const r = await fetch(url, {
     method,
     headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
-  if (r.ok) loadProducts();
-  else alert('Xato: ' + r.status);
+  if (r.ok) {
+    showToast(p.id ? 'Saqlandi' : 'Mahsulot qo\'shildi');
+    loadProducts();
+  } else {
+    const data = await r.json().catch(() => ({}));
+    showToast('Xato: ' + (data.detail || r.status), true);
+  }
 }
 
 async function delProduct(idx) {
   const p = productsCache[idx];
   if (!confirm(`O'chirilsinmi: ${p.name}?`)) return;
-  const r = await fetch(`${API}/api/admin/products/${p.id}`, {
-    method: 'DELETE', headers: authHeaders()
-  });
-  if (r.ok || r.status === 204) loadProducts();
-  else alert('Xato: ' + r.status);
+  const r = await fetch(`${API}/api/admin/products/${p.id}`, { method: 'DELETE', headers: authHeaders() });
+  if (r.ok || r.status === 204) { showToast('O\'chirildi'); loadProducts(); }
+  else showToast('Xato: ' + r.status, true);
 }
-
-function escapeHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function escapeAttr(s) { return escapeHtml(s); }
 
 if (localStorage.getItem(TOKEN_KEY)) showApp();
 else showLogin();
