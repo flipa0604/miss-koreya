@@ -15,20 +15,17 @@
     try { tg.setBackgroundColor('#faf7f4'); } catch (_) {}
   }
 
+  const t = window.t || ((k) => k);
+
   function loadCart() {
-    try {
-      return JSON.parse(localStorage.getItem(CART_KEY)) || {};
-    } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; } catch { return {}; }
   }
-
-  function saveCart() {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }
-
+  function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
   function fmtMoney(n) {
-    return Number(n).toLocaleString('ru-RU') + ' сум';
+    const lang = (window.getLang && window.getLang()) || 'ru';
+    const suffix = lang === 'uz' ? ' so\'m' : ' сум';
+    return Number(n).toLocaleString('ru-RU') + suffix;
   }
-
   function escapeHtml(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -48,19 +45,19 @@
       renderProducts();
     } catch (e) {
       document.getElementById('products-grid').innerHTML =
-        '<div class="loading">Ошибка загрузки. Обновите страницу.</div>';
+        '<div class="loading">' + t('shop.products.error') + '</div>';
     }
   }
 
   function renderProducts() {
     const grid = document.getElementById('products-grid');
     if (!products.length) {
-      grid.innerHTML = '<div class="loading">Товары пока не добавлены</div>';
+      grid.innerHTML = '<div class="loading">' + t('shop.products.empty') + '</div>';
       return;
     }
     grid.innerHTML = products.map(p => `
       <article class="card">
-        <div class="card-img" ${p.image_url ? `style="background-image:url('${escapeHtml(p.image_url)}')"` : ''}>
+        <div class="card-img" ${p.image_url ? `style="background-image:url('${escapeHtml(p.image_url)}');background-size:cover;background-position:center"` : ''}>
           ${p.image_url ? '' : escapeHtml(p.name.split(' ')[0])}
         </div>
         <div class="card-body">
@@ -68,7 +65,7 @@
           <div class="card-name">${escapeHtml(p.name)}</div>
           ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
           <div class="card-price">${fmtMoney(p.price)}</div>
-          <button class="add-btn" onclick="window.MK.addToCart(${p.id})">+ В корзину</button>
+          <button class="add-btn" onclick="window.MK.addToCart(${p.id})">${escapeHtml(t('shop.product.add'))}</button>
         </div>
       </article>
     `).join('');
@@ -81,7 +78,7 @@
     saveCart();
     updateCartBadge();
     renderCart();
-    showToast(`«${p.name}» добавлен в корзину`);
+    showToast(t('shop.toast.added', { name: p.name }));
   }
 
   function updateCartBadge() {
@@ -98,7 +95,7 @@
     }).filter(Boolean);
 
     if (!items.length) {
-      container.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+      container.innerHTML = '<div class="empty-cart">' + t('shop.cart.empty') + '</div>';
       document.getElementById('cart-total').textContent = fmtMoney(0);
       document.getElementById('checkout-btn').disabled = true;
       return;
@@ -106,7 +103,7 @@
 
     container.innerHTML = items.map(({product, qty}) => `
       <div class="cart-item">
-        <div class="cart-item-img" ${product.image_url ? `style="background-image:url('${escapeHtml(product.image_url)}');background-size:cover"` : ''}></div>
+        <div class="cart-item-img" ${product.image_url ? `style="background-image:url('${escapeHtml(product.image_url)}');background-size:cover;background-position:center"` : ''}></div>
         <div class="cart-item-info">
           <div class="cart-item-name">${escapeHtml(product.name)}</div>
           <div class="cart-item-price">${fmtMoney(product.price)}</div>
@@ -114,7 +111,7 @@
             <button onclick="window.MK.changeQty(${product.id}, -1)">−</button>
             <span>${qty}</span>
             <button onclick="window.MK.changeQty(${product.id}, 1)">+</button>
-            <button class="remove" onclick="window.MK.removeItem(${product.id})">Удалить</button>
+            <button class="remove" onclick="window.MK.removeItem(${product.id})">${escapeHtml(t('shop.cart.remove'))}</button>
           </div>
         </div>
       </div>
@@ -145,7 +142,6 @@
     document.getElementById('cart-drawer').classList.add('open');
     renderCart();
   }
-
   function closeCart() {
     document.getElementById('overlay').classList.remove('open');
     document.getElementById('cart-drawer').classList.remove('open');
@@ -156,7 +152,6 @@
     document.getElementById('checkout-err').textContent = '';
     document.getElementById('checkout-modal').classList.add('open');
 
-    // Prefill from Telegram if available
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       const u = tg.initDataUnsafe.user;
       const nameInput = document.querySelector('#checkout-form [name="customer_name"]');
@@ -181,10 +176,7 @@
       .map(([id, qty]) => ({ product_id: Number(id), quantity: qty }))
       .filter(i => i.quantity > 0);
 
-    if (!items.length) {
-      err.textContent = 'Корзина пуста';
-      return;
-    }
+    if (!items.length) { err.textContent = t('shop.checkout.empty'); return; }
 
     const payload = {
       customer_name: form.customer_name.value.trim(),
@@ -194,14 +186,13 @@
       items,
       source: tg ? 'telegram' : 'web',
     };
-
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       payload.telegram_user_id = String(tg.initDataUnsafe.user.id);
       payload.telegram_username = tg.initDataUnsafe.user.username || null;
     }
 
     btn.disabled = true;
-    btn.textContent = 'Отправка...';
+    btn.textContent = t('shop.checkout.sending');
 
     try {
       const r = await fetch(API + '/api/orders', {
@@ -211,7 +202,7 @@
       });
       if (!r.ok) {
         const data = await r.json().catch(() => ({}));
-        throw new Error(data.detail || 'Ошибка ' + r.status);
+        throw new Error(data.detail || 'Error ' + r.status);
       }
       const order = await r.json();
       cart = {};
@@ -221,21 +212,24 @@
       closeCart();
       form.reset();
 
-      const successMsg = `Заказ #${order.id} принят! Мы свяжемся с вами в ближайшее время.`;
-      if (tg) {
-        tg.showAlert(successMsg, () => tg.close());
-      } else {
-        showToast(successMsg);
-      }
+      const successMsg = t('shop.checkout.success', { id: order.id });
+      if (tg) tg.showAlert(successMsg, () => tg.close());
+      else showToast(successMsg);
     } catch (e) {
       err.textContent = String(e.message || e);
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Подтвердить заказ';
+      btn.textContent = t('shop.checkout.submit');
     }
   }
 
-  // Expose
+  // Re-render dynamic content when language changes
+  window.onLangChange = function () {
+    renderProducts();
+    if (document.getElementById('cart-drawer').classList.contains('open')) renderCart();
+    updateCartBadge();
+  };
+
   window.MK = { addToCart, changeQty, removeItem };
   window.openCart = openCart;
   window.closeCart = closeCart;
@@ -243,7 +237,6 @@
   window.closeCheckout = closeCheckout;
   window.submitOrder = submitOrder;
 
-  // Init
   loadProducts();
   updateCartBadge();
 })();

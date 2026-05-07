@@ -154,6 +154,21 @@
   .toast.show { transform: translate(-50%, 0); }
   .toast.err { background: var(--red); }
 
+  .lang-switch {
+    display: inline-flex; gap: 2px; padding: 3px;
+    background: rgba(250,247,244,0.15); border-radius: 999px; margin-right: 8px;
+  }
+  .lang-btn {
+    background: transparent; border: none; padding: 5px 11px; cursor: pointer;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; color: rgba(250,247,244,0.7);
+    border-radius: 999px; transition: all .2s;
+  }
+  .lang-btn.active { background: var(--cream); color: var(--dark); }
+  .lang-btn:not(.active):hover { color: var(--cream); }
+  .login-wrap .lang-switch { background: var(--cream); margin: 0 auto 16px; display: flex; justify-content: center; }
+  .login-wrap .lang-btn { color: var(--muted); }
+  .login-wrap .lang-btn.active { background: var(--dark); color: var(--cream); }
+
   @media (max-width: 600px) {
     .product-card { grid-template-columns: 1fr; }
     .product-card .image-cell img.preview { width: 100%; height: 200px; }
@@ -165,48 +180,60 @@
 
 <div id="login" style="display:none">
   <div class="login-wrap">
-    <h2>Admin login</h2>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" data-lang="uz" onclick="setLang('uz')">UZ</button>
+    </div>
+    <h2 data-i18n="admin.login.title">Admin kirish</h2>
     <div id="login-err" class="err"></div>
-    <input id="username" placeholder="Username" autocomplete="username">
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    <button onclick="doLogin()">Kirish</button>
+    <input id="username" data-i18n-ph="admin.login.user" placeholder="Username" autocomplete="username">
+    <input id="password" type="password" data-i18n-ph="admin.login.pass" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()" data-i18n="admin.login.submit">Kirish</button>
   </div>
 </div>
 
 <div id="app" style="display:none">
   <header>
-    <h1>Miss Koreya — Admin</h1>
-    <button onclick="logout()">Chiqish</button>
+    <h1 data-i18n="admin.header.title">Miss Koreya — Admin</h1>
+    <div style="display:flex;align-items:center">
+      <div class="lang-switch">
+        <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" data-lang="uz" onclick="setLang('uz')">UZ</button>
+      </div>
+      <button onclick="logout()" data-i18n="admin.header.logout">Chiqish</button>
+    </div>
   </header>
   <div class="container">
     <div class="tabs">
-      <button class="tab active" data-tab="orders" onclick="switchTab('orders')">Buyurtmalar</button>
-      <button class="tab" data-tab="products" onclick="switchTab('products')">Mahsulotlar</button>
+      <button class="tab active" data-tab="orders" onclick="switchTab('orders')" data-i18n="admin.tabs.orders">Buyurtmalar</button>
+      <button class="tab" data-tab="products" onclick="switchTab('products')" data-i18n="admin.tabs.products">Mahsulotlar</button>
     </div>
 
     <div id="tab-orders">
       <div class="filters">
         <select id="status-filter" onchange="loadOrders()">
-          <option value="">Barcha statuslar</option>
-          <option value="new">Yangi</option>
-          <option value="confirmed">Tasdiqlangan</option>
-          <option value="shipped">Yuborilgan</option>
-          <option value="delivered">Yetkazilgan</option>
-          <option value="cancelled">Bekor qilingan</option>
+          <option value="" data-i18n="admin.filter.all">Barcha statuslar</option>
+          <option value="new" data-i18n="admin.status.new">Yangi</option>
+          <option value="confirmed" data-i18n="admin.status.confirmed">Tasdiqlangan</option>
+          <option value="shipped" data-i18n="admin.status.shipped">Yuborilgan</option>
+          <option value="delivered" data-i18n="admin.status.delivered">Yetkazilgan</option>
+          <option value="cancelled" data-i18n="admin.status.cancelled">Bekor qilingan</option>
         </select>
-        <button class="btn-primary" onclick="loadOrders()">Yangilash</button>
+        <button class="btn-primary" onclick="loadOrders()" data-i18n="admin.filter.refresh">Yangilash</button>
       </div>
       <div id="orders-list"></div>
     </div>
 
     <div id="tab-products" style="display:none">
-      <button class="btn-add" onclick="addProductRow()">+ Yangi mahsulot qo'shish</button>
+      <button class="btn-add" onclick="addProductRow()" data-i18n="admin.product.add_new">+ Yangi mahsulot qo'shish</button>
       <div id="products-list"></div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<script src="/static/i18n.js"></script>
 
 <script>
 const API = '';
@@ -236,11 +263,11 @@ async function doLogin() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({username: u, password: p})
     });
-    if (!r.ok) { err.textContent = 'Noto\'g\'ri login yoki parol'; return; }
+    if (!r.ok) { err.textContent = window.t('admin.login.err'); return; }
     const data = await r.json();
     localStorage.setItem(TOKEN_KEY, data.access_token);
     showApp();
-  } catch (e) { err.textContent = 'Tarmoq xatosi'; }
+  } catch (e) { err.textContent = window.t('admin.login.network'); }
 }
 
 function logout() { localStorage.removeItem(TOKEN_KEY); showLogin(); }
@@ -254,11 +281,12 @@ function switchTab(name) {
   if (name === 'products') loadProducts();
 }
 
-function fmtMoney(n) { return Number(n).toLocaleString('ru-RU') + ' so\'m'; }
-function fmtDate(s) { return new Date(s).toLocaleString('ru-RU'); }
-function statusLabel(s) {
-  return ({ new: 'Yangi', confirmed: 'Tasdiqlangan', shipped: 'Yuborilgan', delivered: 'Yetkazilgan', cancelled: 'Bekor qilingan' })[s] || s;
+function fmtMoney(n) {
+  const lang = window.getLang ? window.getLang() : 'ru';
+  return Number(n).toLocaleString('ru-RU') + (lang === 'uz' ? ' so\'m' : ' сум');
 }
+function fmtDate(s) { return new Date(s).toLocaleString('ru-RU'); }
+function statusLabel(s) { return window.t('admin.status.' + s) || s; }
 function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ===== Orders ===== */
@@ -270,7 +298,7 @@ async function loadOrders() {
   if (r.status === 401) return showLogin();
   const orders = await r.json();
   const list = document.getElementById('orders-list');
-  if (!orders.length) { list.innerHTML = '<div class="empty">Buyurtmalar yo\'q</div>'; return; }
+  if (!orders.length) { list.innerHTML = '<div class="empty">' + window.t('admin.empty.orders') + '</div>'; return; }
   list.innerHTML = orders.map(o => `
     <div class="card">
       <div class="order-head">
@@ -281,14 +309,19 @@ async function loadOrders() {
         <div style="font-size:18px;font-weight:700">${fmtMoney(o.total)}</div>
       </div>
       <div class="info-grid">
-        <div><b>Mijoz</b>${escapeHtml(o.customer_name)}</div>
-        <div><b>Telefon</b><a href="tel:${escapeHtml(o.phone)}">${escapeHtml(o.phone)}</a></div>
-        <div><b>Manzil</b>${escapeHtml(o.address)}</div>
-        ${o.telegram_username ? `<div><b>Telegram</b>@${escapeHtml(o.telegram_username)}</div>` : ''}
-        ${o.comment ? `<div style="grid-column:1/-1"><b>Izoh</b>${escapeHtml(o.comment)}</div>` : ''}
+        <div><b>${window.t('admin.order.customer')}</b>${escapeHtml(o.customer_name)}</div>
+        <div><b>${window.t('admin.order.phone')}</b><a href="tel:${escapeHtml(o.phone)}">${escapeHtml(o.phone)}</a></div>
+        <div><b>${window.t('admin.order.address')}</b>${escapeHtml(o.address)}</div>
+        ${o.telegram_username ? `<div><b>${window.t('admin.order.telegram')}</b>@${escapeHtml(o.telegram_username)}</div>` : ''}
+        ${o.comment ? `<div style="grid-column:1/-1"><b>${window.t('admin.order.comment')}</b>${escapeHtml(o.comment)}</div>` : ''}
       </div>
       <table>
-        <thead><tr><th>Mahsulot</th><th>Narx</th><th>Soni</th><th style="text-align:right">Jami</th></tr></thead>
+        <thead><tr>
+          <th>${window.t('admin.order.product')}</th>
+          <th>${window.t('admin.order.price')}</th>
+          <th>${window.t('admin.order.qty')}</th>
+          <th style="text-align:right">${window.t('admin.order.sum')}</th>
+        </tr></thead>
         <tbody>
           ${o.items.map(i => `<tr>
             <td>${escapeHtml(i.product_name)}</td>
@@ -313,8 +346,8 @@ async function setStatus(id, status) {
     headers: { ...authHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })
   });
-  if (r.ok) { showToast('Status yangilandi'); loadOrders(); }
-  else showToast('Xato: ' + r.status, true);
+  if (r.ok) { showToast(window.t('admin.toast.status_updated')); loadOrders(); }
+  else showToast(window.t('admin.toast.error', { msg: r.status }), true);
 }
 
 /* ===== Products ===== */
@@ -330,7 +363,7 @@ async function loadProducts() {
 
 function renderProducts() {
   const list = document.getElementById('products-list');
-  if (!productsCache.length) { list.innerHTML = '<div class="empty">Mahsulotlar yo\'q. Yuqoridagi tugma orqali qo\'shing.</div>'; return; }
+  if (!productsCache.length) { list.innerHTML = '<div class="empty">' + window.t('admin.empty.products') + '</div>'; return; }
   list.innerHTML = productsCache.map((p, idx) => productCardHtml(p, idx)).join('');
 }
 
@@ -347,46 +380,46 @@ function productCardHtml(p, idx) {
              onerror="this.style.background='linear-gradient(135deg,#f3e0d2,var(--cream))';this.removeAttribute('src')"
              ${imgSrc ? '' : 'style="background:linear-gradient(135deg,#f3e0d2,var(--cream))"'}>
         <label class="upload-btn">
-          ${imgSrc ? 'Rasmni o\'zgartirish' : 'Rasm yuklash'}
+          ${imgSrc ? window.t('admin.product.img.change') : window.t('admin.product.img.upload')}
           <input type="file" accept="image/*" onchange="uploadImage(event, ${idx})">
         </label>
-        ${imgSrc ? `<button class="upload-btn" onclick="clearImage(${idx})" type="button">× Rasmni olib tashlash</button>` : ''}
+        ${imgSrc ? `<button class="upload-btn" onclick="clearImage(${idx})" type="button">${window.t('admin.product.img.remove')}</button>` : ''}
       </div>
 
       <div class="form-fields">
         <div class="full">
-          <label>Nomi *</label>
-          <input value="${escapeAttr(p.name)}" oninput="productsCache[${idx}].name=this.value" placeholder="Masalan: Anua Heartleaf Toner">
+          <label>${window.t('admin.product.name')}</label>
+          <input value="${escapeAttr(p.name)}" oninput="productsCache[${idx}].name=this.value" placeholder="${escapeAttr(window.t('admin.product.name.ph'))}">
         </div>
 
         <div>
-          <label>Turi (kategoriya)</label>
-          <input value="${escapeAttr(p.category || '')}" oninput="productsCache[${idx}].category=this.value" placeholder="masalan: toner, krem, serum">
+          <label>${window.t('admin.product.cat')}</label>
+          <input value="${escapeAttr(p.category || '')}" oninput="productsCache[${idx}].category=this.value" placeholder="${escapeAttr(window.t('admin.product.cat.ph'))}">
         </div>
 
         <div>
-          <label>Narxi (so'm) *</label>
+          <label>${window.t('admin.product.price')}</label>
           <input type="number" min="0" step="1" value="${p.price}" oninput="productsCache[${idx}].price=this.value">
         </div>
 
         <div class="full">
-          <label>Tavsif</label>
-          <textarea oninput="productsCache[${idx}].description=this.value" placeholder="Mahsulot haqida qisqa ma'lumot">${escapeHtml(p.description || '')}</textarea>
+          <label>${window.t('admin.product.desc')}</label>
+          <textarea oninput="productsCache[${idx}].description=this.value" placeholder="${escapeAttr(window.t('admin.product.desc.ph'))}">${escapeHtml(p.description || '')}</textarea>
         </div>
 
         <div>
-          <label>Tartib raqami</label>
+          <label>${window.t('admin.product.sort')}</label>
           <input type="number" min="0" step="1" value="${p.sort_order || 0}" oninput="productsCache[${idx}].sort_order=this.value">
         </div>
 
         <div class="toggle">
           <input type="checkbox" id="stock-${idx}" ${p.in_stock !== false ? 'checked' : ''} onchange="productsCache[${idx}].in_stock=this.checked">
-          <label for="stock-${idx}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--dark);font-weight:500">Sotuvda mavjud</label>
+          <label for="stock-${idx}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--dark);font-weight:500">${window.t('admin.product.stock')}</label>
         </div>
 
         <div class="product-actions">
-          <button class="btn btn-save" onclick="saveProduct(${idx})">${isNew ? 'Qo\'shish' : 'Saqlash'}</button>
-          ${p.id ? `<button class="btn btn-del" onclick="delProduct(${idx})">O'chirish</button>` : `<button class="btn btn-del" onclick="cancelNew(${idx})">Bekor qilish</button>`}
+          <button class="btn btn-save" onclick="saveProduct(${idx})">${isNew ? window.t('admin.product.add') : window.t('admin.product.save')}</button>
+          ${p.id ? `<button class="btn btn-del" onclick="delProduct(${idx})">${window.t('admin.product.del')}</button>` : `<button class="btn btn-del" onclick="cancelNew(${idx})">${window.t('admin.product.cancel')}</button>`}
         </div>
       </div>
     </div>
@@ -419,14 +452,14 @@ async function uploadImage(ev, idx) {
     });
     if (!r.ok) {
       const data = await r.json().catch(() => ({}));
-      throw new Error(data.detail || 'Yuklash xatosi ' + r.status);
+      throw new Error(data.detail || ('Upload error ' + r.status));
     }
     const data = await r.json();
     productsCache[idx].image_url = data.url;
-    showToast('Rasm yuklandi');
+    showToast(window.t('admin.toast.uploaded'));
     renderProducts();
   } catch (e) {
-    showToast(String(e.message || e), true);
+    showToast(window.t('admin.toast.error', { msg: String(e.message || e) }), true);
   }
 }
 
@@ -437,7 +470,7 @@ function clearImage(idx) {
 
 async function saveProduct(idx) {
   const p = productsCache[idx];
-  if (!p.name || !p.name.trim()) { showToast('Nomi bo\'sh bo\'lishi mumkin emas', true); return; }
+  if (!p.name || !p.name.trim()) { showToast(window.t('admin.product.name_required'), true); return; }
   const body = {
     name: p.name.trim(),
     description: p.description ? p.description.trim() : null,
@@ -455,21 +488,27 @@ async function saveProduct(idx) {
     body: JSON.stringify(body),
   });
   if (r.ok) {
-    showToast(p.id ? 'Saqlandi' : 'Mahsulot qo\'shildi');
+    showToast(p.id ? window.t('admin.toast.saved') : window.t('admin.toast.added'));
     loadProducts();
   } else {
     const data = await r.json().catch(() => ({}));
-    showToast('Xato: ' + (data.detail || r.status), true);
+    showToast(window.t('admin.toast.error', { msg: data.detail || r.status }), true);
   }
 }
 
 async function delProduct(idx) {
   const p = productsCache[idx];
-  if (!confirm(`O'chirilsinmi: ${p.name}?`)) return;
+  if (!confirm(window.t('admin.product.confirm_del', { name: p.name }))) return;
   const r = await fetch(`${API}/api/admin/products/${p.id}`, { method: 'DELETE', headers: authHeaders() });
-  if (r.ok || r.status === 204) { showToast('O\'chirildi'); loadProducts(); }
-  else showToast('Xato: ' + r.status, true);
+  if (r.ok || r.status === 204) { showToast(window.t('admin.toast.deleted')); loadProducts(); }
+  else showToast(window.t('admin.toast.error', { msg: r.status }), true);
 }
+
+// Re-render dynamic content when language changes
+window.onLangChange = function () {
+  if (document.getElementById('tab-orders').style.display !== 'none' && localStorage.getItem(TOKEN_KEY)) loadOrders();
+  if (document.getElementById('tab-products').style.display !== 'none') renderProducts();
+};
 
 if (localStorage.getItem(TOKEN_KEY)) showApp();
 else showLogin();
