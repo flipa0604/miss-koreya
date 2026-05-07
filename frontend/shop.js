@@ -6,15 +6,13 @@
   let products = [];
   let cart = loadCart();
 
-  // Telegram WebApp integration
+  // Telegram WebApp integration — keep our light brand palette, don't follow user theme
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) {
     tg.ready();
     tg.expand();
-    // Apply Telegram theme color to header on supported clients
-    if (tg.themeParams && tg.themeParams.bg_color) {
-      document.documentElement.style.setProperty('--cream', tg.themeParams.bg_color);
-    }
+    try { tg.setHeaderColor('#1a1510'); } catch (_) {}
+    try { tg.setBackgroundColor('#faf7f4'); } catch (_) {}
   }
 
   function loadCart() {
