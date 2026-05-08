@@ -13,7 +13,7 @@ UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent.parent / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
-MAX_BYTES = 5 * 1024 * 1024  # 5 MB
+MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 _SAFE = re.compile(r"[^a-zA-Z0-9._-]+")
 
 
@@ -31,7 +31,7 @@ async def upload_file(
 
     data = await file.read()
     if len(data) > MAX_BYTES:
-        raise HTTPException(413, "File too large (max 5 MB)")
+        raise HTTPException(413, "File too large (max 10 MB)")
 
     stem = _SAFE.sub("-", Path(file.filename).stem)[:60] or "img"
     name = f"{datetime.now(timezone.utc):%Y%m%d-%H%M%S}-{secrets.token_hex(4)}-{stem}{ext}"
